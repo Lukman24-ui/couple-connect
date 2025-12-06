@@ -1,12 +1,13 @@
 import { cn } from "@/lib/utils";
 import { ReactNode } from "react";
 
-interface AppCardProps {
+export interface AppCardProps {
   children: ReactNode;
   className?: string;
   variant?: "default" | "gradient" | "mint" | "elevated" | "sunset";
   animate?: boolean;
   delay?: number;
+  onClick?: () => void;
 }
 
 export const AppCard = ({ 
@@ -14,7 +15,8 @@ export const AppCard = ({
   className, 
   variant = "default",
   animate = true,
-  delay = 0 
+  delay = 0,
+  onClick
 }: AppCardProps) => {
   const variants = {
     default: "bg-card shadow-card",
@@ -30,9 +32,11 @@ export const AppCard = ({
         "rounded-3xl p-5 transition-all duration-300",
         variants[variant],
         animate && "opacity-0 animate-fade-in-up",
+        onClick && "cursor-pointer",
         className
       )}
       style={{ animationDelay: `${delay}ms` }}
+      onClick={onClick}
     >
       {children}
     </div>

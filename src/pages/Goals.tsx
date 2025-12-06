@@ -3,6 +3,7 @@ import { CoupleAvatars } from "@/components/couple/Avatar";
 import { GoalCard } from "@/components/couple/GoalCard";
 import { MilestoneTimeline, defaultMilestones } from "@/components/couple/MilestoneTimeline";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
 import { 
   Plane, 
   Home, 
@@ -16,11 +17,15 @@ import {
 } from "lucide-react";
 
 const Goals = () => {
+  const { profile, partnerProfile } = useAuth();
+  const userName = profile?.full_name?.split(' ')[0] || 'Kamu';
+  const partnerName = partnerProfile?.full_name?.split(' ')[0] || 'Pasangan';
+
   const goals = [
     {
       icon: Plane,
-      title: "Dream Vacation",
-      description: "Save for our Bali trip together",
+      title: "Liburan Impian",
+      description: "Menabung untuk trip Bali bersama",
       progress: 57,
       target: "Rp 15.000.000",
       current: "Rp 8.500.000",
@@ -28,8 +33,8 @@ const Goals = () => {
     },
     {
       icon: Home,
-      title: "House Fund",
-      description: "Down payment for our first home",
+      title: "Dana Rumah",
+      description: "Uang muka untuk rumah pertama kita",
       progress: 45,
       target: "Rp 100.000.000",
       current: "Rp 45.000.000",
@@ -37,37 +42,37 @@ const Goals = () => {
     },
     {
       icon: Dumbbell,
-      title: "Fitness Challenge",
-      description: "Complete 30-day workout together",
+      title: "Tantangan Kebugaran",
+      description: "Selesaikan 30 hari olahraga bersama",
       progress: 73,
-      target: "30 days",
-      current: "22 days",
+      target: "30 hari",
+      current: "22 hari",
       color: "happiness" as const,
     },
     {
       icon: GraduationCap,
-      title: "Learn Together",
-      description: "Complete online course as a couple",
+      title: "Belajar Bersama",
+      description: "Selesaikan kursus online sebagai pasangan",
       progress: 35,
-      target: "12 modules",
-      current: "4 modules",
+      target: "12 modul",
+      current: "4 modul",
       color: "accent" as const,
     },
   ];
 
   const bucketList = [
-    { title: "Watch sunset in Santorini", completed: false },
-    { title: "Cook a 5-course meal together", completed: true },
-    { title: "Learn to dance salsa", completed: false },
-    { title: "Adopt a pet", completed: true },
-    { title: "Run a marathon together", completed: false },
+    { title: "Lihat sunset di Santorini", completed: false },
+    { title: "Masak makanan 5 hidangan bersama", completed: true },
+    { title: "Belajar menari salsa", completed: false },
+    { title: "Adopsi hewan peliharaan", completed: true },
+    { title: "Lari maraton bersama", completed: false },
   ];
 
   const badges = [
-    { icon: Trophy, title: "First Goal", earned: true },
-    { icon: Star, title: "Streak Master", earned: true },
-    { icon: Target, title: "Big Saver", earned: true },
-    { icon: CheckCircle2, title: "Habit Hero", earned: false },
+    { icon: Trophy, title: "Tujuan Pertama", earned: true },
+    { icon: Star, title: "Master Streak", earned: true },
+    { icon: Target, title: "Penabung Hebat", earned: true },
+    { icon: CheckCircle2, title: "Pahlawan Kebiasaan", earned: false },
   ];
 
   return (
@@ -76,27 +81,27 @@ const Goals = () => {
         {/* Header */}
         <div className="flex items-center justify-between mb-6 animate-fade-in-up">
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Couple Goals</h1>
-            <p className="text-sm text-muted-foreground">Grow together, achieve together</p>
+            <h1 className="text-2xl font-bold text-foreground">Tujuan Couple</h1>
+            <p className="text-sm text-muted-foreground">Tumbuh bersama, raih bersama</p>
           </div>
           <CoupleAvatars
-            partner1={{ name: "Sarah" }}
-            partner2={{ name: "Mike" }}
+            partner1={{ name: userName }}
+            partner2={{ name: partnerName }}
             size="md"
           />
         </div>
 
         {/* Milestone Timeline */}
         <AppCard variant="gradient" className="mb-4" delay={100}>
-          <h3 className="text-base font-semibold text-foreground mb-4">Our Journey 💕</h3>
+          <h3 className="text-base font-semibold text-foreground mb-4">Perjalanan Kita 💕</h3>
           <MilestoneTimeline milestones={defaultMilestones} />
         </AppCard>
 
         {/* Goals */}
         <div className="mb-6 animate-fade-in-up" style={{ animationDelay: '200ms' }}>
           <div className="flex items-center justify-between mb-3">
-            <h3 className="text-lg font-semibold text-foreground">Active Goals</h3>
-            <Button variant="ghost" size="sm" className="text-turquoise">See all</Button>
+            <h3 className="text-lg font-semibold text-foreground">Tujuan Aktif</h3>
+            <Button variant="ghost" size="sm" className="text-turquoise">Lihat semua</Button>
           </div>
           
           <div className="space-y-3">
@@ -109,7 +114,7 @@ const Goals = () => {
         {/* Bucket List */}
         <AppCard className="mb-4" delay={300}>
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-base font-semibold text-foreground">Shared Bucket List</h3>
+            <h3 className="text-base font-semibold text-foreground">Bucket List Bersama</h3>
             <Button variant="ghost" size="icon-sm">
               <Plus className="h-4 w-4 text-turquoise" />
             </Button>
@@ -144,7 +149,7 @@ const Goals = () => {
 
         {/* Achievement Badges */}
         <AppCard delay={400}>
-          <h3 className="text-base font-semibold text-foreground mb-4">Reward Badges</h3>
+          <h3 className="text-base font-semibold text-foreground mb-4">Lencana Penghargaan</h3>
           
           <div className="grid grid-cols-4 gap-3">
             {badges.map((badge) => (

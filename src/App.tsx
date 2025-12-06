@@ -3,6 +3,8 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { AuthProvider } from "@/hooks/useAuth";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { BottomNav } from "@/components/couple/BottomNav";
 import Home from "./pages/Home";
 import Money from "./pages/Money";
@@ -12,6 +14,8 @@ import Journal from "./pages/Journal";
 import Goals from "./pages/Goals";
 import Chat from "./pages/Chat";
 import Profile from "./pages/Profile";
+import Auth from "./pages/Auth";
+import CoupleSetup from "./pages/CoupleSetup";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -22,20 +26,60 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <div className="min-h-screen bg-background">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/money" element={<Money />} />
-            <Route path="/habits" element={<Habits />} />
-            <Route path="/fitness" element={<Fitness />} />
-            <Route path="/journal" element={<Journal />} />
-            <Route path="/goals" element={<Goals />} />
-            <Route path="/chat" element={<Chat />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-          <BottomNav />
-        </div>
+        <AuthProvider>
+          <div className="min-h-screen bg-background">
+            <Routes>
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/couple-setup" element={
+                <ProtectedRoute>
+                  <CoupleSetup />
+                </ProtectedRoute>
+              } />
+              <Route path="/" element={
+                <ProtectedRoute>
+                  <Home />
+                </ProtectedRoute>
+              } />
+              <Route path="/money" element={
+                <ProtectedRoute>
+                  <Money />
+                </ProtectedRoute>
+              } />
+              <Route path="/habits" element={
+                <ProtectedRoute>
+                  <Habits />
+                </ProtectedRoute>
+              } />
+              <Route path="/fitness" element={
+                <ProtectedRoute>
+                  <Fitness />
+                </ProtectedRoute>
+              } />
+              <Route path="/journal" element={
+                <ProtectedRoute>
+                  <Journal />
+                </ProtectedRoute>
+              } />
+              <Route path="/goals" element={
+                <ProtectedRoute>
+                  <Goals />
+                </ProtectedRoute>
+              } />
+              <Route path="/chat" element={
+                <ProtectedRoute>
+                  <Chat />
+                </ProtectedRoute>
+              } />
+              <Route path="/profile" element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              } />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+            <BottomNav />
+          </div>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

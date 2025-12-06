@@ -3,13 +3,18 @@ import { CoupleAvatars } from "@/components/couple/Avatar";
 import { ActivityRing } from "@/components/couple/ActivityRing";
 import { ProgressBar } from "@/components/couple/ProgressBar";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
 import { Dumbbell, Timer, Flame, Footprints, Play, Calendar, Users } from "lucide-react";
 
 const Fitness = () => {
+  const { profile, partnerProfile } = useAuth();
+  const userName = profile?.full_name?.split(' ')[0] || 'Kamu';
+  const partnerName = partnerProfile?.full_name?.split(' ')[0] || 'Pasangan';
+
   const workouts = [
-    { icon: "🧘", title: "Morning Yoga", duration: "30 min", calories: 150, time: "7:00 AM" },
-    { icon: "🏃", title: "Evening Run", duration: "45 min", calories: 350, time: "6:00 PM" },
-    { icon: "💪", title: "Strength Training", duration: "40 min", calories: 280, time: "5:00 PM" },
+    { icon: "🧘", title: "Yoga Pagi", duration: "30 menit", calories: 150, time: "07:00" },
+    { icon: "🏃", title: "Lari Sore", duration: "45 menit", calories: 350, time: "18:00" },
+    { icon: "💪", title: "Latihan Kekuatan", duration: "40 menit", calories: 280, time: "17:00" },
   ];
 
   return (
@@ -18,12 +23,12 @@ const Fitness = () => {
         {/* Header */}
         <div className="flex items-center justify-between mb-6 opacity-0 animate-fade-in-up">
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Fitness Together</h1>
-            <p className="text-sm text-muted-foreground">Stay active as a couple</p>
+            <h1 className="text-2xl font-bold text-foreground">Kebugaran Bersama</h1>
+            <p className="text-sm text-muted-foreground">Tetap aktif sebagai pasangan</p>
           </div>
           <CoupleAvatars
-            partner1={{ name: "Sarah" }}
-            partner2={{ name: "Mike" }}
+            partner1={{ name: userName }}
+            partner2={{ name: partnerName }}
             size="md"
           />
         </div>
@@ -32,22 +37,22 @@ const Fitness = () => {
         <AppCard variant="gradient" className="mb-4" delay={100}>
           <div className="flex items-center justify-between">
             <div className="flex-1">
-              <h3 className="text-base font-semibold text-foreground mb-4">Today's Activity</h3>
+              <h3 className="text-base font-semibold text-foreground mb-4">Aktivitas Hari Ini</h3>
               
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
                   <div className="w-3 h-3 rounded-full bg-turquoise" />
-                  <span className="text-sm text-muted-foreground flex-1">Steps</span>
-                  <span className="text-sm font-semibold">8,450 / 10,000</span>
+                  <span className="text-sm text-muted-foreground flex-1">Langkah</span>
+                  <span className="text-sm font-semibold">8.450 / 10.000</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-3 h-3 rounded-full bg-happiness" />
-                  <span className="text-sm text-muted-foreground flex-1">Calories</span>
+                  <span className="text-sm text-muted-foreground flex-1">Kalori</span>
                   <span className="text-sm font-semibold">420 / 500</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <div className="w-3 h-3 rounded-full bg-mint-dark" />
-                  <span className="text-sm text-muted-foreground flex-1">Active Min</span>
+                  <span className="text-sm text-muted-foreground flex-1">Menit Aktif</span>
                   <span className="text-sm font-semibold">35 / 45</span>
                 </div>
               </div>
@@ -64,19 +69,19 @@ const Fitness = () => {
 
         {/* Partner Comparison */}
         <AppCard className="mb-4" delay={200}>
-          <h3 className="text-base font-semibold text-foreground mb-4">Partner Comparison</h3>
+          <h3 className="text-base font-semibold text-foreground mb-4">Perbandingan Pasangan</h3>
           
           <div className="grid grid-cols-2 gap-4">
             <div className="text-center">
               <div className="w-12 h-12 rounded-full bg-turquoise/10 flex items-center justify-center mx-auto mb-2">
-                <span className="text-lg font-bold text-turquoise">S</span>
+                <span className="text-lg font-bold text-turquoise">{userName.charAt(0)}</span>
               </div>
-              <p className="font-semibold text-sm">Sarah</p>
+              <p className="font-semibold text-sm">{userName}</p>
               <div className="mt-3 space-y-2">
                 <div>
                   <div className="flex items-center justify-between text-xs mb-1">
                     <Footprints className="h-3 w-3 text-muted-foreground" />
-                    <span>9,200</span>
+                    <span>9.200</span>
                   </div>
                   <ProgressBar progress={92} color="turquoise" size="sm" />
                 </div>
@@ -92,14 +97,14 @@ const Fitness = () => {
             
             <div className="text-center">
               <div className="w-12 h-12 rounded-full bg-mint/50 flex items-center justify-center mx-auto mb-2">
-                <span className="text-lg font-bold text-turquoise-dark">M</span>
+                <span className="text-lg font-bold text-turquoise-dark">{partnerName.charAt(0)}</span>
               </div>
-              <p className="font-semibold text-sm">Mike</p>
+              <p className="font-semibold text-sm">{partnerName}</p>
               <div className="mt-3 space-y-2">
                 <div>
                   <div className="flex items-center justify-between text-xs mb-1">
                     <Footprints className="h-3 w-3 text-muted-foreground" />
-                    <span>7,700</span>
+                    <span>7.700</span>
                   </div>
                   <ProgressBar progress={77} color="turquoise" size="sm" />
                 </div>
@@ -121,21 +126,21 @@ const Fitness = () => {
             <div className="w-10 h-10 rounded-xl bg-primary-foreground/20 flex items-center justify-center">
               <Play className="h-5 w-5" />
             </div>
-            <span>Start Workout Together</span>
+            <span>Mulai Olahraga Bersama</span>
           </Button>
           <Button variant="secondary" className="h-auto py-4 flex-col gap-2">
             <div className="w-10 h-10 rounded-xl bg-turquoise/10 flex items-center justify-center">
               <Calendar className="h-5 w-5 text-turquoise" />
             </div>
-            <span className="text-foreground">Schedule Workout</span>
+            <span className="text-foreground">Jadwal Olahraga</span>
           </Button>
         </div>
 
         {/* Workout Plans */}
         <AppCard delay={400}>
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-foreground">Today's Workouts</h3>
-            <Button variant="ghost" size="sm" className="text-turquoise">See all</Button>
+            <h3 className="text-lg font-semibold text-foreground">Olahraga Hari Ini</h3>
+            <Button variant="ghost" size="sm" className="text-turquoise">Lihat semua</Button>
           </div>
           
           <div className="space-y-3">
@@ -156,7 +161,7 @@ const Fitness = () => {
                     </span>
                     <span className="flex items-center gap-1">
                       <Flame className="h-3 w-3" />
-                      {workout.calories} cal
+                      {workout.calories} kal
                     </span>
                   </div>
                 </div>
