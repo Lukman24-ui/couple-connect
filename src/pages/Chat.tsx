@@ -4,30 +4,46 @@ import { ChatBubble } from "@/components/couple/ChatBubble";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/hooks/useAuth";
-import { Send, Heart, Smile, Bell, Image, Mic } from "lucide-react";
+import { useMessages } from "@/hooks/useMessages";
+import { Send, Heart, Smile, Bell, Image, Mic, Loader2 } from "lucide-react";
 import { useState } from "react";
 
 const Chat = () => {
-  const [message, setMessage] = useState("");
-  const { profile, partnerProfile } = useAuth();
+  const [messageText, setMessageText] = useState("");
+  const [sending, setSending] = useState(false);
+  const { profile, partnerProfile, user } = useAuth();
+  const { messages, loading, sendMessage, messagesEndRef } = useMessages();
   const partnerName = partnerProfile?.full_name?.split(' ')[0] || 'Pasangan';
-
-  const messages = [
-    { message: "Selamat pagi sayang! ☀️", time: "08:00", isOwn: false, senderName: partnerName },
-    { message: "Pagi! Tidur nyenyak?", time: "08:02", isOwn: true },
-    { message: "Iya! Siap untuk jalan pagi kita?", time: "08:03", isOwn: false, senderName: partnerName },
-    { message: "Tentu! Sebentar habiskan kopi dulu ☕", time: "08:05", isOwn: true },
-    { message: "Jangan lupa kita makan malam dengan orang tuaku nanti malam!", time: "08:10", isOwn: false, senderName: partnerName },
-    { message: "Sudah di kalender! Aku bawakan sebotol wine yang enak 🍷", time: "08:12", isOwn: true },
-    { message: "Kamu yang terbaik! 🥰", time: "08:13", isOwn: false, senderName: partnerName },
-  ];
 
   const quickStickers = ["❤️", "😘", "🥰", "💕", "✨", "🙌"];
 
-  const reminders = [
-    { title: "Malam Romantis", time: "Malam ini, 19:00", icon: "💑" },
-    { title: "Belanja Bulanan", time: "Besok, 10:00", icon: "🛒" },
-  ];
+  const handleSend = async () => {
+    if (!messageText.trim()) return;
+    setSending(true);
+    const success = await sendMessage(messageText.trim());
+    setSending(false);
+    if (success) {
+      setMessageText("");
+    }
+  };
+
+  const handleSendSticker = async (sticker: string) => {
+    await sendMessage(sticker, 'sticker');
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+
+  const formatTime = (dateStr: string) => {
+    return new Date(dateStr).toLocaleTimeString('id-ID', { 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    });
+  };
 
   return (
     <div className="min-h-screen bg-background pb-24 flex flex-col">
@@ -46,27 +62,32 @@ const Chat = () => {
           </Button>
         </div>
 
-        {/* Shared Reminders */}
-        <div className="flex gap-2 mb-4 overflow-x-auto pb-2 -mx-4 px-4 opacity-0 animate-fade-in-up stagger-1">
-          {reminders.map((reminder, index) => (
-            <div
-              key={index}
-              className="min-w-[160px] px-3 py-2 rounded-2xl bg-mint/30 flex items-center gap-2"
-            >
-              <span className="text-lg">{reminder.icon}</span>
-              <div>
-                <p className="text-xs font-semibold text-foreground">{reminder.title}</p>
-                <p className="text-[10px] text-muted-foreground">{reminder.time}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-
         {/* Messages */}
         <div className="flex-1 overflow-y-auto space-y-3 mb-4 -mx-4 px-4">
-          {messages.map((msg, index) => (
-            <ChatBubble key={index} {...msg} />
-          ))}
+          {loading ? (
+            <div className="flex justify-center py-8">
+              <Loader2 className="h-6 w-6 animate-spin text-turquoise" />
+            </div>
+          ) : messages.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-16 text-center">
+              <Heart className="h-12 w-12 text-turquoise/30 mb-4" />
+              <p className="text-muted-foreground">Belum ada pesan</p>
+              <p className="text-sm text-muted-foreground">Kirim pesan pertamamu!</p>
+            </div>
+          ) : (
+            <>
+              {messages.map((msg) => (
+                <ChatBubble 
+                  key={msg.id} 
+                  message={msg.content}
+                  time={formatTime(msg.created_at)}
+                  isOwn={msg.sender_id === user?.id}
+                  senderName={msg.sender_id === user?.id ? undefined : partnerName}
+                />
+              ))}
+              <div ref={messagesEndRef} />
+            </>
+          )}
         </div>
 
         {/* Quick Stickers */}
@@ -74,6 +95,7 @@ const Chat = () => {
           {quickStickers.map((sticker, index) => (
             <button
               key={index}
+              onClick={() => handleSendSticker(sticker)}
               className="w-10 h-10 rounded-xl bg-muted hover:bg-mint/30 flex items-center justify-center text-lg transition-all hover:scale-110"
             >
               {sticker}
@@ -82,7 +104,11 @@ const Chat = () => {
         </div>
 
         {/* Encouragement Button */}
-        <Button variant="mint" className="w-full mb-3">
+        <Button 
+          variant="mint" 
+          className="w-full mb-3"
+          onClick={() => sendMessage("Aku sayang kamu! ❤️")}
+        >
           <Heart className="h-4 w-4 mr-2" fill="currentColor" />
           Kirim Semangat
         </Button>
@@ -94,8 +120,9 @@ const Chat = () => {
           </Button>
           <Input
             placeholder="Ketik pesan..."
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
+            value={messageText}
+            onChange={(e) => setMessageText(e.target.value)}
+            onKeyPress={handleKeyPress}
             className="flex-1 border-0 bg-transparent focus-visible:ring-0 text-sm"
           />
           <Button variant="ghost" size="icon-sm">
@@ -104,8 +131,13 @@ const Chat = () => {
           <Button variant="ghost" size="icon-sm">
             <Mic className="h-5 w-5 text-muted-foreground" />
           </Button>
-          <Button size="icon-sm" className="rounded-full">
-            <Send className="h-4 w-4" />
+          <Button 
+            size="icon-sm" 
+            className="rounded-full"
+            onClick={handleSend}
+            disabled={sending || !messageText.trim()}
+          >
+            {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
           </Button>
         </div>
       </div>

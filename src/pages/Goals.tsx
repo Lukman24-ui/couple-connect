@@ -1,9 +1,14 @@
 import { AppCard } from "@/components/couple/AppCard";
 import { CoupleAvatars } from "@/components/couple/Avatar";
-import { GoalCard } from "@/components/couple/GoalCard";
+import { ProgressRing } from "@/components/couple/ProgressRing";
+import { ProgressBar } from "@/components/couple/ProgressBar";
 import { MilestoneTimeline, defaultMilestones } from "@/components/couple/MilestoneTimeline";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/hooks/useAuth";
+import { useGoals } from "@/hooks/useGoals";
 import { 
   Plane, 
   Home, 
@@ -13,65 +18,88 @@ import {
   Star,
   Plus,
   CheckCircle2,
-  Target
+  Target,
+  Trash2,
+  Loader2
 } from "lucide-react";
+import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+
+const iconOptions = ['🎯', '✈️', '🏠', '💪', '📚', '💰', '❤️', '🌟'];
 
 const Goals = () => {
   const { profile, partnerProfile } = useAuth();
+  const { goals, loading, addGoal, updateGoal, deleteGoal } = useGoals();
   const userName = profile?.full_name?.split(' ')[0] || 'Kamu';
   const partnerName = partnerProfile?.full_name?.split(' ')[0] || 'Pasangan';
 
-  const goals = [
-    {
-      icon: Plane,
-      title: "Liburan Impian",
-      description: "Menabung untuk trip Bali bersama",
-      progress: 57,
-      target: "Rp 15.000.000",
-      current: "Rp 8.500.000",
-      color: "turquoise" as const,
-    },
-    {
-      icon: Home,
-      title: "Dana Rumah",
-      description: "Uang muka untuk rumah pertama kita",
-      progress: 45,
-      target: "Rp 100.000.000",
-      current: "Rp 45.000.000",
-      color: "mint" as const,
-    },
-    {
-      icon: Dumbbell,
-      title: "Tantangan Kebugaran",
-      description: "Selesaikan 30 hari olahraga bersama",
-      progress: 73,
-      target: "30 hari",
-      current: "22 hari",
-      color: "happiness" as const,
-    },
-    {
-      icon: GraduationCap,
-      title: "Belajar Bersama",
-      description: "Selesaikan kursus online sebagai pasangan",
-      progress: 35,
-      target: "12 modul",
-      current: "4 modul",
-      color: "accent" as const,
-    },
-  ];
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    icon: '🎯',
+    target_amount: '',
+  });
 
-  const bucketList = [
-    { title: "Lihat sunset di Santorini", completed: false },
-    { title: "Masak makanan 5 hidangan bersama", completed: true },
-    { title: "Belajar menari salsa", completed: false },
-    { title: "Adopsi hewan peliharaan", completed: true },
-    { title: "Lari maraton bersama", completed: false },
-  ];
+  const handleSubmit = async () => {
+    if (!formData.title) return;
+    setSaving(true);
+    const success = await addGoal({
+      title: formData.title,
+      description: formData.description,
+      icon: formData.icon,
+      target_amount: formData.target_amount ? parseFloat(formData.target_amount) : undefined,
+    });
+    setSaving(false);
+    if (success) {
+      setShowAddDialog(false);
+      setFormData({ title: '', description: '', icon: '🎯', target_amount: '' });
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!deleteId) return;
+    await deleteGoal(deleteId);
+    setDeleteId(null);
+  };
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(value);
+  };
 
   const badges = [
-    { icon: Trophy, title: "Tujuan Pertama", earned: true },
-    { icon: Star, title: "Master Streak", earned: true },
-    { icon: Target, title: "Penabung Hebat", earned: true },
+    { icon: Trophy, title: "Tujuan Pertama", earned: goals.length > 0 },
+    { icon: Star, title: "Master Streak", earned: goals.filter(g => g.status === 'completed').length > 0 },
+    { icon: Target, title: "Penabung Hebat", earned: goals.some(g => Number(g.current_amount) > 0) },
     { icon: CheckCircle2, title: "Pahlawan Kebiasaan", earned: false },
   ];
 
@@ -101,51 +129,60 @@ const Goals = () => {
         <div className="mb-6 animate-fade-in-up" style={{ animationDelay: '200ms' }}>
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-lg font-semibold text-foreground">Tujuan Aktif</h3>
-            <Button variant="ghost" size="sm" className="text-turquoise">Lihat semua</Button>
           </div>
           
-          <div className="space-y-3">
-            {goals.map((goal) => (
-              <GoalCard key={goal.title} {...goal} />
-            ))}
-          </div>
+          {loading ? (
+            <div className="flex justify-center py-8">
+              <Loader2 className="h-6 w-6 animate-spin text-turquoise" />
+            </div>
+          ) : goals.length === 0 ? (
+            <AppCard className="text-center py-8">
+              <p className="text-muted-foreground">Belum ada tujuan. Tambahkan tujuan pertamamu!</p>
+            </AppCard>
+          ) : (
+            <div className="space-y-3">
+              {goals.map((goal) => {
+                const progress = goal.target_amount 
+                  ? Math.round((Number(goal.current_amount) / Number(goal.target_amount)) * 100)
+                  : 0;
+                return (
+                  <AppCard key={goal.id} className="flex items-start gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-turquoise/10 flex items-center justify-center text-2xl">
+                      {goal.icon}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-semibold text-foreground">{goal.title}</h4>
+                      {goal.description && (
+                        <p className="text-xs text-muted-foreground mb-2">{goal.description}</p>
+                      )}
+                      {goal.target_amount && (
+                        <>
+                          <ProgressBar progress={progress} size="sm" color="turquoise" />
+                          <div className="flex justify-between mt-1">
+                            <span className="text-xs text-muted-foreground">
+                              {formatCurrency(Number(goal.current_amount))}
+                            </span>
+                            <span className="text-xs text-muted-foreground">
+                              {formatCurrency(Number(goal.target_amount))}
+                            </span>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      className="text-destructive hover:bg-destructive/10"
+                      onClick={() => setDeleteId(goal.id)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </AppCard>
+                );
+              })}
+            </div>
+          )}
         </div>
-
-        {/* Bucket List */}
-        <AppCard className="mb-4" delay={300}>
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-base font-semibold text-foreground">Bucket List Bersama</h3>
-            <Button variant="ghost" size="icon-sm">
-              <Plus className="h-4 w-4 text-turquoise" />
-            </Button>
-          </div>
-          
-          <div className="space-y-2">
-            {bucketList.map((item, index) => (
-              <div
-                key={index}
-                className="flex items-center gap-3 p-2 rounded-xl hover:bg-muted/50 transition-colors"
-              >
-                <div
-                  className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                    item.completed
-                      ? "bg-turquoise text-primary-foreground"
-                      : "border-2 border-border"
-                  }`}
-                >
-                  {item.completed && <CheckCircle2 className="h-4 w-4" />}
-                </div>
-                <span
-                  className={`text-sm ${
-                    item.completed ? "text-muted-foreground line-through" : "text-foreground"
-                  }`}
-                >
-                  {item.title}
-                </span>
-              </div>
-            ))}
-          </div>
-        </AppCard>
 
         {/* Achievement Badges */}
         <AppCard delay={400}>
@@ -177,7 +214,87 @@ const Goals = () => {
             ))}
           </div>
         </AppCard>
+
+        {/* Add Goal FAB */}
+        <Button 
+          className="fixed bottom-24 right-4 w-14 h-14 rounded-full shadow-elevated z-40"
+          size="icon-lg"
+          onClick={() => setShowAddDialog(true)}
+        >
+          <Plus className="h-6 w-6" />
+        </Button>
       </div>
+
+      {/* Add Dialog */}
+      <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Tambah Tujuan</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>Judul Tujuan</Label>
+              <Input
+                placeholder="Contoh: Liburan Bali"
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              />
+            </div>
+            <div>
+              <Label>Deskripsi</Label>
+              <Textarea
+                placeholder="Deskripsi tujuan..."
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              />
+            </div>
+            <div>
+              <Label>Icon</Label>
+              <Select value={formData.icon} onValueChange={(v) => setFormData({ ...formData, icon: v })}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {iconOptions.map((icon) => (
+                    <SelectItem key={icon} value={icon}>{icon}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Target (Rp) - Opsional</Label>
+              <Input
+                type="number"
+                placeholder="0"
+                value={formData.target_amount}
+                onChange={(e) => setFormData({ ...formData, target_amount: e.target.value })}
+              />
+            </div>
+            <Button className="w-full" onClick={handleSubmit} disabled={saving || !formData.title}>
+              {saving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+              Simpan
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation */}
+      <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Hapus Tujuan?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tindakan ini tidak dapat dibatalkan. Tujuan akan dihapus secara permanen.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Batal</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Hapus
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
