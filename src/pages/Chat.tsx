@@ -3,27 +3,30 @@ import { CoupleAvatar } from "@/components/couple/Avatar";
 import { ChatBubble } from "@/components/couple/ChatBubble";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/hooks/useAuth";
 import { Send, Heart, Smile, Bell, Image, Mic } from "lucide-react";
 import { useState } from "react";
 
 const Chat = () => {
   const [message, setMessage] = useState("");
+  const { profile, partnerProfile } = useAuth();
+  const partnerName = partnerProfile?.full_name?.split(' ')[0] || 'Pasangan';
 
   const messages = [
-    { message: "Good morning love! ☀️", time: "8:00 AM", isOwn: false, senderName: "Sarah" },
-    { message: "Morning! Did you sleep well?", time: "8:02 AM", isOwn: true },
-    { message: "Yes! Ready for our morning walk?", time: "8:03 AM", isOwn: false, senderName: "Sarah" },
-    { message: "Absolutely! Let me just finish my coffee ☕", time: "8:05 AM", isOwn: true },
-    { message: "Don't forget we have dinner with my parents tonight!", time: "8:10 AM", isOwn: false, senderName: "Sarah" },
-    { message: "Already on my calendar! I got them a nice bottle of wine 🍷", time: "8:12 AM", isOwn: true },
-    { message: "You're the best! 🥰", time: "8:13 AM", isOwn: false, senderName: "Sarah" },
+    { message: "Selamat pagi sayang! ☀️", time: "08:00", isOwn: false, senderName: partnerName },
+    { message: "Pagi! Tidur nyenyak?", time: "08:02", isOwn: true },
+    { message: "Iya! Siap untuk jalan pagi kita?", time: "08:03", isOwn: false, senderName: partnerName },
+    { message: "Tentu! Sebentar habiskan kopi dulu ☕", time: "08:05", isOwn: true },
+    { message: "Jangan lupa kita makan malam dengan orang tuaku nanti malam!", time: "08:10", isOwn: false, senderName: partnerName },
+    { message: "Sudah di kalender! Aku bawakan sebotol wine yang enak 🍷", time: "08:12", isOwn: true },
+    { message: "Kamu yang terbaik! 🥰", time: "08:13", isOwn: false, senderName: partnerName },
   ];
 
   const quickStickers = ["❤️", "😘", "🥰", "💕", "✨", "🙌"];
 
   const reminders = [
-    { title: "Date Night", time: "Tonight, 7:00 PM", icon: "💑" },
-    { title: "Grocery Shopping", time: "Tomorrow, 10:00 AM", icon: "🛒" },
+    { title: "Malam Romantis", time: "Malam ini, 19:00", icon: "💑" },
+    { title: "Belanja Bulanan", time: "Besok, 10:00", icon: "🛒" },
   ];
 
   return (
@@ -32,10 +35,10 @@ const Chat = () => {
         {/* Header */}
         <div className="flex items-center justify-between mb-4 opacity-0 animate-fade-in-up">
           <div className="flex items-center gap-3">
-            <CoupleAvatar name="Sarah" size="lg" ring />
+            <CoupleAvatar name={partnerName} size="lg" ring />
             <div>
-              <h1 className="text-lg font-bold text-foreground">Sarah 💕</h1>
-              <p className="text-xs text-mint-dark">Online • Last seen just now</p>
+              <h1 className="text-lg font-bold text-foreground">{partnerName} 💕</h1>
+              <p className="text-xs text-mint-dark">Online • Terakhir aktif baru saja</p>
             </div>
           </div>
           <Button variant="ghost" size="icon">
@@ -81,7 +84,7 @@ const Chat = () => {
         {/* Encouragement Button */}
         <Button variant="mint" className="w-full mb-3">
           <Heart className="h-4 w-4 mr-2" fill="currentColor" />
-          Send Encouragement
+          Kirim Semangat
         </Button>
 
         {/* Input */}
@@ -90,7 +93,7 @@ const Chat = () => {
             <Image className="h-5 w-5 text-muted-foreground" />
           </Button>
           <Input
-            placeholder="Type a message..."
+            placeholder="Ketik pesan..."
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             className="flex-1 border-0 bg-transparent focus-visible:ring-0 text-sm"
