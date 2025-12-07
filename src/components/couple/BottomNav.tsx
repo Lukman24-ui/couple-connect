@@ -1,4 +1,4 @@
-import { Home, Wallet, Target, Dumbbell, BookHeart, MessageCircleHeart, User, Trophy } from "lucide-react";
+import { Home, Wallet, Target, Dumbbell, BookHeart, MessageCircleHeart, User, BarChart3 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -6,9 +6,8 @@ const navItems = [
   { icon: Home, label: "Home", path: "/" },
   { icon: Wallet, label: "Money", path: "/money" },
   { icon: Target, label: "Habits", path: "/habits" },
-  { icon: Dumbbell, label: "Fitness", path: "/fitness" },
+  { icon: BarChart3, label: "Stats", path: "/statistics" },
   { icon: BookHeart, label: "Journal", path: "/journal" },
-  { icon: Trophy, label: "Goals", path: "/goals" },
   { icon: MessageCircleHeart, label: "Chat", path: "/chat" },
   { icon: User, label: "Profile", path: "/profile" },
 ];
