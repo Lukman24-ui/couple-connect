@@ -33,6 +33,7 @@ interface AuthContextType {
   createCouple: () => Promise<{ inviteCode: string | null; error: any }>;
   joinCouple: (inviteCode: string) => Promise<{ error: any }>;
   refreshCoupleData: () => Promise<void>;
+  updateProfile: (data: Partial<Profile>) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -159,6 +160,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setPartnerProfile(null);
   };
 
+  const updateProfile = (data: Partial<Profile>) => {
+    setProfile(prev => prev ? { ...prev, ...data } : null);
+  };
+
   const createCouple = async () => {
     if (!user) return { inviteCode: null, error: 'Pengguna tidak ditemukan' };
 
@@ -234,7 +239,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       signOut,
       createCouple,
       joinCouple,
-      refreshCoupleData
+      refreshCoupleData,
+      updateProfile
     }}>
       {children}
     </AuthContext.Provider>

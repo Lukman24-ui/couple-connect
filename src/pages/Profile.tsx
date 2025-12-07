@@ -1,4 +1,5 @@
 import { AppCard } from "@/components/couple/AppCard";
+import { AvatarUpload } from "@/components/couple/AvatarUpload";
 import { CoupleAvatar } from "@/components/couple/Avatar";
 import { ProgressRing } from "@/components/couple/ProgressRing";
 import { Button } from "@/components/ui/button";
@@ -26,7 +27,7 @@ import {
 import { useState } from "react";
 
 const Profile = () => {
-  const { profile, partnerProfile, couple, signOut } = useAuth();
+  const { user, profile, partnerProfile, couple, signOut, updateProfile } = useAuth();
   const navigate = useNavigate();
   const [loggingOut, setLoggingOut] = useState(false);
 
@@ -75,10 +76,14 @@ const Profile = () => {
         {/* Profile Card */}
         <AppCard variant="gradient" className="mb-4 text-center" delay={100}>
           <div className="relative inline-block mb-4">
-            <CoupleAvatar name={userName} size="xl" ring />
-            <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-mint flex items-center justify-center">
-              <Heart className="h-3 w-3 text-turquoise-dark" fill="currentColor" />
-            </div>
+            {user && (
+              <AvatarUpload
+                userId={user.id}
+                currentAvatarUrl={profile?.avatar_url}
+                name={userName}
+                onUploadComplete={(url) => updateProfile({ avatar_url: url })}
+              />
+            )}
           </div>
           
           <h2 className="text-xl font-bold text-foreground mb-1">{userName}</h2>
@@ -86,7 +91,11 @@ const Profile = () => {
           
           {isConnected ? (
             <div className="flex items-center justify-center gap-2 px-4 py-2 rounded-full bg-turquoise/10 inline-flex">
-              <Heart className="h-4 w-4 text-turquoise" fill="currentColor" />
+              <CoupleAvatar 
+                src={partnerProfile?.avatar_url || undefined} 
+                name={partnerName || ''} 
+                size="sm" 
+              />
               <span className="text-sm font-medium text-turquoise">Terhubung dengan {partnerName} 💙</span>
             </div>
           ) : (
