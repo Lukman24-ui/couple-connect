@@ -14,6 +14,7 @@ import Journal from "./pages/Journal";
 import Goals from "./pages/Goals";
 import Chat from "./pages/Chat";
 import Profile from "./pages/Profile";
+import Statistics from "./pages/Statistics";
 import Auth from "./pages/Auth";
 import CoupleSetup from "./pages/CoupleSetup";
 import NotFound from "./pages/NotFound";
@@ -73,6 +74,11 @@ const App = () => (
               <Route path="/profile" element={
                 <ProtectedRoute>
                   <Profile />
+                </ProtectedRoute>
+              } />
+              <Route path="/statistics" element={
+                <ProtectedRoute>
+                  <Statistics />
                 </ProtectedRoute>
               } />
               <Route path="*" element={<NotFound />} />
