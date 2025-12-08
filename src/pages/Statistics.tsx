@@ -32,8 +32,6 @@ const Statistics = () => {
   const [period, setPeriod] = useState<7 | 14 | 30>(7);
   const { dailyStats, overallStats, loading } = useStatistics(period);
 
-  const isConnected = couple?.status === 'active' && partnerProfile;
-
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center pb-24">
@@ -42,7 +40,7 @@ const Statistics = () => {
     );
   }
 
-  if (!isConnected) {
+  if (!couple) {
     return (
       <div className="min-h-screen bg-background pb-24">
         <div className="max-w-lg mx-auto px-4 pt-6">
