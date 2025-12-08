@@ -88,10 +88,10 @@ export const useStatistics = (days: number = 7) => {
         const dateStr = format(date, 'yyyy-MM-dd');
         const displayDate = format(date, 'dd MMM');
 
-        // Mood for this day
+        // Mood for this day (convert 1-5 scale to 0-100%)
         const dayJournals = journalData?.filter(j => j.entry_date === dateStr) || [];
         const avgMood = dayJournals.length > 0
-          ? Math.round(dayJournals.reduce((sum, j) => sum + (j.mood_score || 0), 0) / dayJournals.length)
+          ? Math.round((dayJournals.reduce((sum, j) => sum + (j.mood_score || 0), 0) / dayJournals.length) * 20)
           : 0;
 
         // Habits completed this day
@@ -130,7 +130,7 @@ export const useStatistics = (days: number = 7) => {
 
       setOverallStats({
         totalJournalEntries: allJournals.length,
-        avgMoodScore: allJournals.length ? Math.round(totalMood / allJournals.length) : 0,
+        avgMoodScore: allJournals.length ? Math.round((totalMood / allJournals.length) * 20) : 0, // Convert 1-5 scale to 0-100%
         totalHabitsCompleted: filteredCompletions.length,
         totalGoalsCompleted: completedGoals,
         totalTransactions: transactionsData?.length || 0,
