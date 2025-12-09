@@ -18,6 +18,7 @@ import Statistics from "./pages/Statistics";
 import Install from "./pages/Install";
 import Auth from "./pages/Auth";
 import CoupleSetup from "./pages/CoupleSetup";
+import TravelMilestones from "./pages/TravelMilestones";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -80,6 +81,11 @@ const App = () => (
               <Route path="/statistics" element={
                 <ProtectedRoute>
                   <Statistics />
+                </ProtectedRoute>
+              } />
+              <Route path="/travel" element={
+                <ProtectedRoute>
+                  <TravelMilestones />
                 </ProtectedRoute>
               } />
               <Route path="/install" element={<Install />} />

@@ -360,6 +360,48 @@ export type Database = {
           },
         ]
       }
+      travel_milestones: {
+        Row: {
+          couple_id: string
+          created_at: string
+          description: string | null
+          id: string
+          location: string | null
+          photo_caption: string | null
+          photo_url: string | null
+          title: string
+          updated_at: string | null
+          visited: boolean | null
+          visited_at: string | null
+        }
+        Insert: {
+          couple_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          location?: string | null
+          photo_caption?: string | null
+          photo_url?: string | null
+          title: string
+          updated_at?: string | null
+          visited?: boolean | null
+          visited_at?: string | null
+        }
+        Update: {
+          couple_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          location?: string | null
+          photo_caption?: string | null
+          photo_url?: string | null
+          title?: string
+          updated_at?: string | null
+          visited?: boolean | null
+          visited_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
