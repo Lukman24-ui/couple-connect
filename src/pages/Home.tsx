@@ -2,10 +2,9 @@ import { AppCard } from "@/components/couple/AppCard";
 import { CoupleAvatars } from "@/components/couple/Avatar";
 import { WeekCalendar } from "@/components/couple/WeekCalendar";
 import { QuickAction } from "@/components/couple/QuickAction";
-import { StatCard } from "@/components/couple/StatCard";
 import { ProgressBar } from "@/components/couple/ProgressBar";
 import { SunIllustration, LandscapeIllustration } from "@/components/couple/SunIllustration";
-import { Wallet, Target, Dumbbell, BookHeart, PiggyBank, CheckCircle2 } from "lucide-react";
+import { Wallet, Target, Dumbbell, BookHeart, PiggyBank, CheckCircle2, Plane } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
@@ -112,11 +111,12 @@ const Home = () => {
         {/* Quick Actions */}
         <div className="mb-6 opacity-0 animate-fade-in-up stagger-3">
           <h3 className="text-lg font-semibold text-foreground mb-3">Aksi Cepat Bersama</h3>
-          <div className="grid grid-cols-4 gap-2">
+          <div className="grid grid-cols-5 gap-2">
             <QuickAction icon={Wallet} label="Keuangan" color="turquoise" onClick={() => navigate('/money')} />
             <QuickAction icon={Target} label="Kebiasaan" color="mint" onClick={() => navigate('/habits')} />
             <QuickAction icon={Dumbbell} label="Tujuan" color="happiness" onClick={() => navigate('/goals')} />
             <QuickAction icon={BookHeart} label="Jurnal" color="accent" onClick={() => navigate('/journal')} />
+            <QuickAction icon={Plane} label="Travel" color="turquoise" onClick={() => navigate('/travel')} />
           </div>
         </div>
 
