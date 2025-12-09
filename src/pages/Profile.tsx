@@ -7,12 +7,10 @@ import { useAuth } from "@/hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { 
-  Bell, 
   DollarSign, 
   Palette, 
   RefreshCw, 
   ChevronRight, 
-  Heart,
   Settings,
   LogOut,
   Shield,
@@ -25,6 +23,7 @@ import {
   Loader2
 } from "lucide-react";
 import { useState } from "react";
+import NotificationSettings from "@/components/couple/NotificationSettings";
 
 const Profile = () => {
   const { user, profile, partnerProfile, couple, signOut, updateProfile } = useAuth();
@@ -50,7 +49,6 @@ const Profile = () => {
   ];
 
   const settings = [
-    { icon: Bell, label: "Notifikasi", value: "Aktif" },
     { icon: DollarSign, label: "Format Mata Uang", value: "IDR (Rp)" },
     { icon: Palette, label: "Tema", value: "Turquoise" },
     { icon: RefreshCw, label: "Sinkronisasi Data", value: "Otomatis" },
@@ -133,6 +131,11 @@ const Profile = () => {
             ))}
           </div>
         </AppCard>
+
+        {/* Notification Settings */}
+        <div className="mb-4 opacity-0 animate-fade-in-up" style={{ animationDelay: '250ms', animationFillMode: 'forwards' }}>
+          <NotificationSettings />
+        </div>
 
         {/* Settings */}
         <AppCard className="mb-4" delay={300}>
